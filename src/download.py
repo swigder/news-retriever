@@ -1,25 +1,31 @@
 from eventregistry import EventRegistry, QueryArticles, datetime, RequestArticlesInfo, ReturnInfo, ArticleInfoFlags, \
     RequestArticlesUriList, QueryArticle, RequestArticleInfo
 import sys
+import json
 
 
 def get_article_list(er):
     q = QueryArticles(lang='eng', categoryUri='dmoz/News', ignoreSourceUri='www.reuters.com')
     q.addRequestedResult(RequestArticlesUriList())
-    return er.execQuery(q)
+    return er.execQuery(q)['uriList']['results']
 
 
 def get_articles(er, uris):
-    q = QueryArticle(uris)
-    q.addRequestedResult(RequestArticleInfo())
-    return er.execQuery(q)
+    articles = dict()
+    for uri_group in chunk(uris, 200):
+        q = QueryArticle(uri_group)
+        q.addRequestedResult(RequestArticleInfo())
+        articles.update(er.execQuery(q))
+    return articles
+
+
+def chunk(seq, size):
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
 
 
 if __name__ == '__main__':
-    er = EventRegistry(apiKey='')
+    er = EventRegistry(apiKey=sys.argv[1])
     uris = get_article_list(er)
-    articles = get_articles(er, uris['uriList']['results'][:200])
-    for id, article in articles.items():
-        print('title:', article['info']['title'])
-        print('body:', article['info']['body'])
-        print('\n')
+    articles = get_articles(er, uris)
+    with open('../data/data-10000.json', 'w') as fp:
+        json.dump(articles, fp, indent=4)

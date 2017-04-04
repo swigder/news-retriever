@@ -5,7 +5,9 @@ import json
 
 
 def get_article_list(er):
-    q = QueryArticles(lang='eng', categoryUri='dmoz/News', ignoreSourceUri='www.reuters.com')
+    q = QueryArticles(lang='eng', categoryUri='dmoz/News',
+                      ignoreSourceUri='www.reuters.com',  # we can't get reuters body
+                      isDuplicateFilter='skipDuplicates')
     q.addRequestedResult(RequestArticlesUriList())
     return er.execQuery(q)['uriList']['results']
 

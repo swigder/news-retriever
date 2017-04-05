@@ -1,6 +1,7 @@
 from eventregistry import EventRegistry, QueryArticles, datetime, RequestArticlesInfo, ReturnInfo, ArticleInfoFlags, \
     RequestArticlesUriList, QueryArticle, RequestArticleInfo
 import sys
+import time
 import json
 
 
@@ -29,5 +30,5 @@ if __name__ == '__main__':
     er = EventRegistry(apiKey=sys.argv[1])
     uris = get_article_list(er)
     articles = get_articles(er, uris)
-    with open('../data/data-10000.json', 'w') as fp:
+    with open('../data/data-{}.json'.format(time.strftime("%Y%m%d-%H%M%S")), 'w') as fp:
         json.dump(articles, fp, indent=4)

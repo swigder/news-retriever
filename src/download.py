@@ -30,5 +30,6 @@ if __name__ == '__main__':
     er = EventRegistry(apiKey=sys.argv[1])
     uris = get_article_list(er)
     articles = get_articles(er, uris)
+    print('Found', len(articles), 'articles')
     with open('../data/data-{}.json'.format(time.strftime("%Y%m%d-%H%M%S")), 'w') as fp:
         json.dump(articles, fp, indent=4)
